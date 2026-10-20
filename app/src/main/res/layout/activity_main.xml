@@ -1,0 +1,74 @@
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#F5F7F2">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Smart Pantry Manager"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="#245C3A"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reduce food waste. Cook with what you have."
+        android:textSize="15sp"
+        android:textColor="#555555"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My Pantry"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        android:textColor="#222222"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:id="@+id/emptyPantryMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your pantry is empty. Add your first ingredient!"
+        android:textSize="16sp"
+        android:textColor="#666666"
+        android:padding="16dp"
+        android:background="#FFFFFF"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/addIngredientButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="+ Add Ingredient" />
+
+    <Button
+        android:id="@+id/suggestedRecipesButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Suggested Recipes"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/settingsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/viewPantryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Pantry" />
+
+</LinearLayout>

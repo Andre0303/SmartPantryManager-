@@ -23,9 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
         DatabaseHelper db = new DatabaseHelper(this);
 
-        if (!db.hasRecipes()) {
-            RecipeSeeder.seedRecipes(db);
-        }
+        RecipeSeeder.seedRecipes(db);
+        RecipeSeeder.addMissingRecipes(db);
 
 // Update instructions for existing recipes
         db.updateRecipeInstructions(

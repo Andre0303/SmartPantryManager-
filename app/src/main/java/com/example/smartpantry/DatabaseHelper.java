@@ -284,4 +284,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+
+    public int getRecipeCount() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT COUNT(*) FROM recipes",
+                null
+        );
+
+        try {
+            if (cursor.moveToFirst()) {
+                return cursor.getInt(0);
+            }
+
+            return 0;
+        } finally {
+            cursor.close();
+        }
+    }
+
+
+    public long addRecipeIfMissing(String name, String instructions) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT id FROM recipes WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))",
+                new String[]{name}
+        );
+
+        try {
+            if (cursor.moveToFirst()) {
+                return cursor.getLong(0);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return addRecipe(name, instructions);
+    }
+
+
+
 }

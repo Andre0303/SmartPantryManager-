@@ -120,8 +120,16 @@ public class IngredientAdapter
         }
 
         holder.nameView.setText(name);
+        String quantityText;
+
+        if (quantity == Math.floor(quantity)) {
+            quantityText = String.valueOf((long) quantity);
+        } else {
+            quantityText = String.valueOf(quantity);
+        }
+
         holder.quantityView.setText(
-                "Quantity: " + quantity + " " + unit
+                "Quantity: " + quantityText + " " + unit
         );
 
         if (expiry == null || expiry.trim().isEmpty()) {

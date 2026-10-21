@@ -374,5 +374,74 @@ public class RecipeMatchingInstrumentedTest {
     }
 
 
+    @Test
+    public void recipeIsHiddenWhenItHasNoRequiredIngredients() {
+        SQLiteDatabase testDb = SQLiteDatabase.create(null);
+
+        try {
+            testDb.execSQL(
+                    "CREATE TABLE pantry_items (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "name TEXT NOT NULL, " +
+                            "quantity REAL NOT NULL, " +
+                            "unit TEXT NOT NULL, " +
+                            "expiry_date TEXT)"
+            );
+
+            testDb.execSQL(
+                    "CREATE TABLE recipes (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "name TEXT NOT NULL, " +
+                            "instructions TEXT NOT NULL)"
+            );
+
+            testDb.execSQL(
+                    "CREATE TABLE recipe_ingredients (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "recipe_id INTEGER NOT NULL, " +
+                            "ingredient_name TEXT NOT NULL, " +
+                            "quantity REAL NOT NULL DEFAULT 1, " +
+                            "unit TEXT NOT NULL DEFAULT 'pieces')"
+            );
+
+            // Create a recipe but give it no required ingredients.
+            testDb.execSQL(
+                    "INSERT INTO recipes (name, instructions) " +
+                            "VALUES ('Empty Recipe', 'Test instructions')"
+            );
+
+            Cursor cursor = testDb.rawQuery(
+                    "SELECT r.name FROM recipes r " +
+                            "WHERE EXISTS (" +
+                            "SELECT 1 FROM recipe_ingredients ri " +
+                            "WHERE ri.recipe_id = r.id) " +
+                            "AND NOT EXISTS (" +
+                            "SELECT 1 FROM recipe_ingredients ri " +
+                            "WHERE ri.recipe_id = r.id " +
+                            "AND NOT EXISTS (" +
+                            "SELECT 1 FROM pantry_items p " +
+                            "WHERE LOWER(TRIM(p.name)) = " +
+                            "LOWER(TRIM(ri.ingredient_name)) " +
+                            "AND LOWER(TRIM(p.unit)) = " +
+                            "LOWER(TRIM(ri.unit)) " +
+                            "AND p.quantity >= ri.quantity))",
+                    null
+            );
+
+            try {
+                assertFalse(
+                        "A recipe with no required ingredients must be hidden",
+                        cursor.moveToFirst()
+                );
+            } finally {
+                cursor.close();
+            }
+        } finally {
+            testDb.close();
+        }
+    }
+
+
+
 
 }

@@ -442,6 +442,86 @@ public class RecipeMatchingInstrumentedTest {
     }
 
 
+    @Test
+    public void recipeIsHiddenWhenIngredientQuantityIsZero() {
+        SQLiteDatabase testDb = SQLiteDatabase.create(null);
+
+        try {
+            testDb.execSQL(
+                    "CREATE TABLE pantry_items (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "name TEXT NOT NULL, " +
+                            "quantity REAL NOT NULL, " +
+                            "unit TEXT NOT NULL, " +
+                            "expiry_date TEXT)"
+            );
+
+            testDb.execSQL(
+                    "CREATE TABLE recipes (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "name TEXT NOT NULL, " +
+                            "instructions TEXT NOT NULL)"
+            );
+
+            testDb.execSQL(
+                    "CREATE TABLE recipe_ingredients (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "recipe_id INTEGER NOT NULL, " +
+                            "ingredient_name TEXT NOT NULL, " +
+                            "quantity REAL NOT NULL DEFAULT 1, " +
+                            "unit TEXT NOT NULL DEFAULT 'pieces')"
+            );
+
+            testDb.execSQL(
+                    "INSERT INTO recipes (name, instructions) " +
+                            "VALUES ('Test Omelette', 'Test instructions')"
+            );
+
+            testDb.execSQL(
+                    "INSERT INTO recipe_ingredients " +
+                            "(recipe_id, ingredient_name, quantity, unit) " +
+                            "VALUES (1, 'Egg', 1, 'pieces')"
+            );
+
+            // Zero eggs cannot satisfy the recipe requirement.
+            testDb.execSQL(
+                    "INSERT INTO pantry_items (name, quantity, unit) " +
+                            "VALUES ('Egg', 0, 'pieces')"
+            );
+
+            Cursor cursor = testDb.rawQuery(
+                    "SELECT r.name FROM recipes r " +
+                            "WHERE EXISTS (" +
+                            "SELECT 1 FROM recipe_ingredients ri " +
+                            "WHERE ri.recipe_id = r.id) " +
+                            "AND NOT EXISTS (" +
+                            "SELECT 1 FROM recipe_ingredients ri " +
+                            "WHERE ri.recipe_id = r.id " +
+                            "AND NOT EXISTS (" +
+                            "SELECT 1 FROM pantry_items p " +
+                            "WHERE LOWER(TRIM(p.name)) = " +
+                            "LOWER(TRIM(ri.ingredient_name)) " +
+                            "AND LOWER(TRIM(p.unit)) = " +
+                            "LOWER(TRIM(ri.unit)) " +
+                            "AND p.quantity >= ri.quantity))",
+                    null
+            );
+
+            try {
+                assertFalse(
+                        "Recipe must be hidden when the available quantity is zero",
+                        cursor.moveToFirst()
+                );
+            } finally {
+                cursor.close();
+            }
+        } finally {
+            testDb.close();
+        }
+    }
+
+
+
 
 
 }

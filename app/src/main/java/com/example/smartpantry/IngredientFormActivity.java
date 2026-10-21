@@ -9,6 +9,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class IngredientFormActivity extends Activity {
 
@@ -137,6 +143,27 @@ public class IngredientFormActivity extends Activity {
                 quantityInput.getText().toString().trim();
         String expiry = expiryInput.getText().toString().trim();
         String unit = unitSpinner.getSelectedItem().toString();
+
+
+        if (!expiry.isEmpty()) {
+            SimpleDateFormat dateFormat =
+                    new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+            dateFormat.setLenient(false);
+
+            ParsePosition position = new ParsePosition(0);
+            Date parsedDate = dateFormat.parse(expiry, position);
+
+            if (parsedDate == null || position.getIndex() != expiry.length()) {
+                Toast.makeText(
+                        this,
+                        "Enter a valid expiry date (YYYY-MM-DD)",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
+        }
+
 
         if (name.isEmpty() || quantityText.isEmpty()) {
             Toast.makeText(
